@@ -1,17 +1,95 @@
 /**
  * Write a description of class Deck here.
  * 
- * @author (your name) 
- * @version (a version number or a date)
+ * @author Oliver Bennett 
+ * @version 1/15/25
  */
 
 import greenfoot.*;
+import java.util.ArrayList;
+import java.util.Collections;
+
+//I don't know if using this package is allowed but it works :) Can I use this on the AP test?
+
 
 public class Deck 
 {
-    /****************************************************
-    ***   Leave as comment until ready to implement   ***
-    *****************************************************
+    
+    private Card[] unShuffledDeck;
+    private ArrayList<Card> shuffledDeck;
+    
+    public Deck(int numOfCardsInDeck)
+    {
+        numOfCardsInDeck = limitNumCardsInDeck(numOfCardsInDeck);  // limits size to 27 or 81        
+        unShuffledDeck = new Card[numOfCardsInDeck + 1];           // playing cards plus blank card
+        shuffledDeck = new ArrayList<>();                          // Instantiates ArrayList with no elements
+        populateUnshuffledDeckWithCards(numOfCardsInDeck);         // Initializes Unshuffled Deck
+        createShuffledDeck();                                      // Initializes shuffled deck excluding blank card
+    }
+    
+    // Keeps track of how many unused cards remain in the deck
+    public int getNumCardsInDeck() 
+    {
+        // This method will return the number of cards remaining in the unshuffled deck
+        return shuffledDeck.size();
+    }
+
+    // Returns the top card of the deck as the cards are dealt
+    public Card getTopCard() 
+    {
+        
+        if (!shuffledDeck.isEmpty())
+        {
+            return shuffledDeck.remove(0);
+        }
+        return null;
+        
+    }
+
+    // Returns a card at a specific location in the shuffled deck
+    public Card getShuffledCard(int index) 
+    {
+        if (index >= 0 && index < shuffledDeck.size())
+        {
+            return shuffledDeck.get(index);
+        }
+        return null; 
+    }
+
+    // Returns the entire shuffled deck
+    public ArrayList<Card> getShuffledDeck() 
+    {
+        // This method will return the complete shuffled deck as an ArrayList
+        return shuffledDeck;
+    }
+
+    /**Forces the number of cards in the unshuffled deck to either
+    27 (3 sets of 3 characteristics of triples) or 81 
+    (3 sets of 4 characteristics of triples)**/
+    public int limitNumCardsInDeck(int numCards) {
+        // This method will adjust the size of the unshuffled deck
+        // to either 27 or 81 cards based on the game rules
+        if (numCards <= 27) {
+            return 27;
+        } else {
+            return 81;
+        }
+        
+    }
+
+    /** Shuffles the unshuffled deck to form the shuffled deck
+     and removes the blank card**/
+    public void createShuffledDeck() 
+    {
+        shuffledDeck = new ArrayList<>();
+        
+        for (int i = 1; i < unShuffledDeck.length; i++)
+        {
+            shuffledDeck.add(unShuffledDeck[i]);
+        }
+        Collections.shuffle(shuffledDeck);
+        
+    }
     // adds all the cards to the unshuffled deck.   
     private void populateUnshuffledDeckWithCards(int numOfCardsInDeck)        
     {
@@ -269,5 +347,4 @@ public class Deck
           }
     }
     
-    **************  END OF COMMENT BLOCK  ***************/
 }

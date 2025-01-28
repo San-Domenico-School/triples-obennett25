@@ -1,10 +1,10 @@
 import greenfoot.*; 
 
 /**
- * Game Board for Triples
+ * This is the Card class. It holds the methods that get/set info about card objects. It is used to build cards for the triples game.
  * 
- * @author (your name) 
- * @version (a version number or a date)
+ * @author Oliver Bennett
+ * @version 1/28/25
  */
 
 public class Card extends Actor
