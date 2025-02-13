@@ -12,10 +12,16 @@ import java.util.ArrayList;
 public class Player extends Actor
 {
     
-    Dealer dealer = new Dealer(81);
+    private Dealer dealer;
     private Card[] cardsSelected = new Card[3];;
     private ArrayList<Card> cardsOnBoard;
     private ArrayList<Integer> selectedCardsIndex = new ArrayList<>();;
+    
+    public Player(Dealer dealer)
+    {
+        this.dealer = dealer;
+    }
+    
     
     /**
      * Act - do whatever the Player wants to do. This method is called whenever
@@ -28,8 +34,17 @@ public class Player extends Actor
         if (threeCardsHaveBeenSelected) 
         {
             dealer.setCardsSelected(cardsOnBoard, selectedCardsIndex, cardsSelected);
-            dealer.checkIfTriple(cardsSelected);
+            if (dealer.checkIfTriple(cardsSelected))
+            {
+                dealer.actionIfTriple();
+            }
+            else
+            {
+                Animations.wobble(cardsSelected);
+            }
             resetCardsSelected();
+            
+
         }
     }
     
@@ -40,26 +55,26 @@ public class Player extends Actor
     
     private void selectCards() 
     {
+        cardsOnBoard = new ArrayList<>(getWorld().getObjects(Card.class));
         for (int i = 0; i < cardsOnBoard.size(); i++)
         {
+                       
             Card card = cardsOnBoard.get(i);
             
-                if (Greenfoot.mouseClicked(card)) 
+            if (Greenfoot.mouseClicked(card)) 
+            {
+                if (card.getIsSelected()) 
                 {
-                    if (selectedCardsIndex.contains(i)) 
-                    {
-                        
-                        card.setIsSelected(false); 
-                        card.setImage(card.getCardImage()); 
-                        selectedCardsIndex.remove(Integer.valueOf(i)); 
-                        } else 
-                        {
-                        
-                        card.setIsSelected(true); 
-                        card.setImage(card.getSelectedCardImage());
-                        selectedCardsIndex.add(i); 
+                    card.setIsSelected(false); 
+                    card.setImage(card.getCardImage()); 
+                    selectedCardsIndex.remove(selectedCardsIndex.indexOf(i)); 
+                } 
+                else 
+                {
+                    card.setIsSelected(true); 
+                    card.setImage(card.getSelectedCardImage());
+                    selectedCardsIndex.add(i); 
                 }
-            
             }
         }
     }
@@ -72,8 +87,8 @@ public class Player extends Actor
     
             card.setIsSelected(false);
         }
-
         selectedCardsIndex.clear();
+
     }
     
     private boolean setCardsSelect() 
@@ -93,5 +108,6 @@ public class Player extends Actor
             return false;
         }
     }
+    
     
 }

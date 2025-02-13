@@ -2,7 +2,8 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 import java.util.ArrayList;
 
 /**
- * This is the dealer class. It can check tosee if something is a triple and deal new cards from the deck.
+ * This is the dealer class. It can check to see if something is a triple, take action if it is/isn't a triple and 
+ * deal new cards from the deck.
  * 
  * @author Oliver Bennett
  * @version 1/28/25
@@ -15,6 +16,8 @@ public class Dealer extends Actor
     private Card[] cardsSelected;
     private int numCardsInDeck;
     private int triplesRemaining; 
+    private Actor cardsImage;
+    private Actor scoreImage;
     
     /**
      * Act - do whatever the Dealer wants to do. This method is called whenever
@@ -60,60 +63,43 @@ public class Dealer extends Actor
         int startY = 40; 
 
         
-            for (int row = 0; row < rows; row++) 
+        for (int row = 0; row < rows; row++) 
+        {
+            for (int col = 0; col < cols; col++) 
             {
-                for (int col = 0; col < cols; col++) 
+                if (deck.getNumCardsInDeck() == 0) 
                 {
-                    if (deck.getNumCardsInDeck() == 0) 
-                    {
-                        return; 
-                    }
-    
-                    int x = startX + col * (cardWidth + horizontalSpacing);
-                    int y = startY + row * (cardHeight + verticalSpacing);
-    
-                    Card card = deck.getTopCard();
-                    cardsOnBoard.add(card);
-                    World world = getWorld();
-                    if (world != null) 
-                    {
-                        world.addObject(card, x, y);
-                    }
+                    return; 
                 }
+                
+                int x = startX + col * (cardWidth + horizontalSpacing);
+                int y = startY + row * (cardHeight + verticalSpacing);
+    
+                Card card = deck.getTopCard();
+                    
+                cardsOnBoard.add(card);
+                World world = getWorld();
+                    
+                if (world != null) 
+                {
+                    world.addObject(card, x, y);
+                }
+            }
         }
     }
     
     public void setUI() 
     {
-        if (getWorld() == null)
-        {
-            return;
-        }
-        
-        
-        GreenfootImage cardsImage = new GreenfootImage(String.valueOf(numCardsInDeck), 24, Color.BLACK, new Color(255, 255, 255, 0));
-        Actor cardsRemainingActor = new Actor() 
-        {
-            {
-                setImage(cardsImage);
-            }
-        };
-        getWorld().addObject(cardsRemainingActor, 315, 470);
-
-        GreenfootImage scoreImage = new GreenfootImage(String.valueOf(Scorekeeper.getScore()), 24, Color.BLACK, new Color(255, 255, 255, 0));
-        Actor scoreActor = new Actor() 
-        {
-            {
-                setImage(scoreImage);
-            }
-        };
-        getWorld().addObject(scoreActor, 315, 505);
-            
+        getWorld().showText(String.valueOf(deck.getNumCardsInDeck()), 315, 470);
+        getWorld().showText(String.valueOf(Scorekeeper.getScore()), 315, 505);
     }
     
     public void endGame() 
     {
-        // Implementation here
+        if (triplesRemaining == 0)
+        {
+            Greenfoot.stop();
+        }
     }
 
     
@@ -123,10 +109,10 @@ public class Dealer extends Actor
         Card two = selectedCards[1];
         Card three = selectedCards[2];
         
-        if (one.getColor().ordinal() + two.getColor().ordinal() + three.getColor().ordinal() % 3 == 0 &&
-        one.getShape().ordinal() + two.getShape().ordinal() + three.getShape().ordinal() % 3 == 0 &&
-        one.getNumberOfShapes() + two.getNumberOfShapes() + three.getNumberOfShapes() % 3 == 0 &&
-        one.getShading() + two.getShading() + three.getShading() % 3 == 0)
+        if ((one.getColor().ordinal() + two.getColor().ordinal() + three.getColor().ordinal()) % 3 == 0 &&
+        (one.getShape().ordinal() + two.getShape().ordinal() + three.getShape().ordinal()) % 3 == 0 &&
+        (one.getNumberOfShapes() + two.getNumberOfShapes() + three.getNumberOfShapes()) % 3 == 0 &&
+        (one.getShading() + two.getShading() + three.getShading()) % 3 == 0)
         {
             return true;
         }
@@ -136,9 +122,35 @@ public class Dealer extends Actor
         }
     }
     
-    public void setCardsSelected(ArrayList<Card> cards, ArrayList<Integer> indices, Card[] selectedCards) {
+    public void setCardsSelected(ArrayList<Card> cards, ArrayList<Integer> indices, Card[] selectedCards) 
+    {
         this.cardsSelected = selectedCards;
         this.selectedCardsIndex = indices;
     }
-
+    
+    
+    public void actionIfTriple()
+    {
+            
+        for (int i = 0; i < 3; i++)
+        {
+            Scorekeeper.updateScore();
+            int xPos = cardsSelected[i].getX();
+            int yPos = cardsSelected[i].getY();
+            Animations.slideAndTurn(cardsSelected[i]);
+            getWorld().removeObject(cardsSelected[i]);
+            //cardsOnBoard.remove(cardsSelected[i]);
+            if (deck.getTopCard() != null)
+            {
+                Card card = deck.getTopCard();
+                getWorld().addObject(card, xPos, yPos);
+            }
+        }
+        
+        cardsOnBoard = new ArrayList<>(getWorld().getObjects(Card.class));
+        triplesRemaining--;
+        setUI();
+        
+    }
+    
 }

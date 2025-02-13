@@ -1,5 +1,6 @@
 /**
- * Write a description of class Scorekeeper here.
+ * The Scorekeeper determines the number of points score for selecting a triple depending on how long the user takes to select 
+ * it and updates the score.
  * 
  * @author Oliver Bennett
  * @version 1/9/25
